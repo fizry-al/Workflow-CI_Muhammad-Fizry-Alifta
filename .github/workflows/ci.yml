@@ -19,12 +19,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install mlflow
+          pip install mlflow scikit-learn pandas numpy matplotlib
 
-      - name: Run MLflow Project
+      - name: Run MLflow Project (local env)
         run: |
           cd MLProject
-          mlflow run .
+          mlflow run . --env-manager=local
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4
