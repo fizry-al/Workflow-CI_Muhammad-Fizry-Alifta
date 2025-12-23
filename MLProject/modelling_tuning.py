@@ -34,35 +34,33 @@ param_grid = {
 grid_search = GridSearchCV(pipeline, param_grid=param_grid, scoring="f1", cv=5, n_jobs=-1)
 
 # MLflow manual logging
-mlflow.set_experiment("Loan Approval - KNN Tuning")
+grid_search.fit(X_train, y_train)
 
-with mlflow.start_run():
-    grid_search.fit(X_train, y_train)
+best_model = grid_search.best_estimator_
+best_params = grid_search.best_params_
 
-    best_model = grid_search.best_estimator_
-    best_params = grid_search.best_params_
+# Prediction
+y_pred = best_model.predict(X_test)
 
-    # Prediction
-    y_pred = best_model.predict(X_test)
+# Metrics
+acc = accuracy_score(y_test, y_pred)
+prec = precision_score(y_test, y_pred)
+rec = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
 
-    # Metrics
-    acc = accuracy_score(y_test, y_pred)
-    prec = precision_score(y_test, y_pred)
-    rec = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
+# Manual logging
+mlflow.log_params(best_params)
+mlflow.log_metric("accuracy", acc)
+mlflow.log_metric("precision", prec)
+mlflow.log_metric("recall", rec)
+mlflow.log_metric("f1_score", f1)
 
-    # Manual logging
-    mlflow.log_params(best_params)
-    mlflow.log_metric("accuracy", acc)
-    mlflow.log_metric("precision", prec)
-    mlflow.log_metric("recall", rec)
-    mlflow.log_metric("f1_score", f1)
+# Save model
+mlflow.sklearn.log_model(best_model, "knn_model")
 
-    # Save model
-    mlflow.sklearn.log_model(best_model, "knn_model")
+print("Best Params:", best_params)
+print("Accuracy :", acc)
+print("Precision:", prec)
+print("Recall   :", rec)
+print("F1-score :", f1)
 
-    print("Best Params:", best_params)
-    print("Accuracy :", acc)
-    print("Precision:", prec)
-    print("Recall   :", rec)
-    print("F1-score :", f1)
