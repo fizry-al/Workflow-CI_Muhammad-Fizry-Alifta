@@ -1,0 +1,33 @@
+name: CI MLflow Project
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install MLflow
+        run: |
+          pip install mlflow
+
+      - name: Run MLflow Project
+        run: |
+          cd MLProject
+          mlflow run .
+
+      - name: Upload MLflow artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: mlflow-artifacts
+          path: MLProject/mlruns
